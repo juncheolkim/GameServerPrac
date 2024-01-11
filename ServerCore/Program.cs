@@ -17,6 +17,11 @@
                 int desired = 1;
                 if (Interlocked.CompareExchange(ref _locked, desired, expected)==expected)
                     break;
+
+                // 쉬다 올게~
+                Thread.Sleep(1);    // 무조건 휴식 -> 무조건 1ms 정도 쉬고 싶다
+                Thread.Sleep(0);    // 조건부 양보 -> 나보다 우선순위가 낮은 쓰레드에게는 양보 불가 => 우선순위가 나보다 같거나 높은 쓰레드가 없으면 다시 본인한테
+                Thread.Yield();     // 관대한 양보 -> 조건없이 양보, 지금 실행 가능한 쓰레드가 실행된다. 양보 가능한 쓰레드 없으면 남은 시간 소진
             }
         }
 
