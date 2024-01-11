@@ -2,36 +2,29 @@
 {
     internal class Program
     {
-        static int _num = 0;
-        static Mutex _lock = new Mutex();
-        static void Thread_1()
+        static ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+
+        class Reward
         {
-            for (int i = 0; i < 100000; i++)
-            {
-                _lock.WaitOne();
-                _num++;
-                _lock.ReleaseMutex();
-            }
+
         }
 
-        static void Thread_2()
+        static Reward GetRewardById(int id)
         {
-            for (int i = 0; i < 100000; i++)
-            {
-                _lock.WaitOne();
-                _num--;
-                _lock.ReleaseMutex();
-            }
+            _lock.EnterReadLock();
+            _lock.ExitReadLock();
+
+            return null;
+        }
+
+        static void AddReward(Reward reward)
+        {
+            _lock.EnterWriteLock();
+            _lock.ExitWriteLock();
         }
 
         static void Main(string[] args)
         {
-            Task t1 = new Task(Thread_1);
-            Task t2 = new Task(Thread_2);
-            t1.Start();
-            t2.Start();
-            Task.WaitAll(t1, t2);
-            Console.WriteLine(_num);
 
         }
     }
