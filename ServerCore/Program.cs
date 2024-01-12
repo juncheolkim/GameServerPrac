@@ -2,35 +2,23 @@
 {
     internal class Program
     {
-        static volatile int count = 0;
-        static Lock _lock = new Lock();
+        static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name is {Thread.CurrentThread.ManagedThreadId}"; });
+        static void WhoAmI()
+        {
+            bool repeat = ThreadName.IsValueCreated;
+            if (repeat)
+                Console.WriteLine(ThreadName.Value + "()repeat");
+            else
+                Console.WriteLine(ThreadName.Value);
+            Thread.Sleep(1000) ;
+        }
         static void Main(string[] args)
         {
-            Task t1 = new Task(delegate ()
-            {
-                for (int i = 0; i < 100000; i++)
-                {
-                    _lock.WriteLock();
-                    _lock.WriteLock();
-                    count++;
-                    _lock.WriteUnlock();
-                    _lock.WriteUnlock();
-                }
-            });
-            Task t2 = new Task(delegate ()
-            {
-                for (int i = 0; i < 100000; i++)
-                {
-                    _lock.WriteLock();
-                    count--;
-                    _lock.WriteUnlock();
-                }
-            });
-            t1.Start();
-            t2.Start();
+            ThreadPool.SetMinThreads(1, 1);
+            ThreadPool.SetMaxThreads(3, 3);
+            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
 
-            Task.WaitAll(t1,t2);
-            Console.WriteLine(count);
+            ThreadName.Dispose();
         }
     }
 }
