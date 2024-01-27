@@ -41,8 +41,8 @@ namespace ServerCore
             args.AcceptSocket = null;
 
             bool pending = _listenSocket.AcceptAsync(args);
-            if (pending == false)
-                OnAcceptCompleted(null, args);
+            //if (pending == false)
+            //    OnAcceptCompleted(null, args);
         }
 
         void OnAcceptCompleted(object sender, SocketAsyncEventArgs args)

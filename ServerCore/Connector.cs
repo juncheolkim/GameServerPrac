@@ -31,8 +31,11 @@ namespace ServerCore
                 return;
 
             bool pending = socket.ConnectAsync(args);
-            if (pending)
-                OnConnectCompleted(null, args);
+            // 아래 코드가 있으면 ConnectAsync에 의해서 콜백함수가 호출 + 동기적 호출로 
+            // 두 번 호출됨
+            //if (pending)
+            //    OnConnectCompleted(null, args);
+            
         }
 
         void OnConnectCompleted(object sender, SocketAsyncEventArgs args)
