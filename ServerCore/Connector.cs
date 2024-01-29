@@ -11,17 +11,21 @@ namespace ServerCore
     public class Connector
     {
         Func<Session> _sessionFactory;
-        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory, int count = 1)
         {
-            Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _sessionFactory = sessionFactory;
+            // 더미 클라이언트를 다수의 접속에 사용해볼 수 있기 때문에 count를 설정할 수 있게 한다.
+            for(int i = 0; i < count; i++)
+            {
+                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                _sessionFactory = sessionFactory;
 
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-            args.Completed += OnConnectCompleted;
-            args.RemoteEndPoint = endPoint;
-            args.UserToken = socket;
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += OnConnectCompleted;
+                args.RemoteEndPoint = endPoint;
+                args.UserToken = socket;
 
-            RegisterConnect(args);
+                RegisterConnect(args);
+            }
         }
 
         void RegisterConnect(SocketAsyncEventArgs args)

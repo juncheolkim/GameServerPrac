@@ -21,10 +21,17 @@ namespace Server
         {
             S_Chat packet = new S_Chat();
             packet.playerId = session.SessionID;
-            packet.chat = chat;
+            packet.chat = $"{chat} I am {packet.playerId}";
             ArraySegment<byte> segment = packet.Write();
 
             // 공유하는 변수(sessions)를 다루면 무조건 lock
+            /*
+             * 아래와 같이 lock을 잡으면, 다수의 상호작용을 처리할 때
+             * 처리가 밀리는 현상이 발생한다.
+             * 이를 처리하기 위해서는, 각각의 세션들이 Broadcast를 호출하는 것이 아니라
+             * 이 게임룸을 관리하는 것은 단 하나의 쓰레드이고, 세션들은 작업을 큐에 넣어두고 가는 방식으로 처리해야한다.
+             * 이 큐를 JobQueue 라고 부른다.
+             */
             lock (_lock)
             {
                 foreach (ClientSession s in _sessions)
