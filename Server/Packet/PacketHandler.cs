@@ -21,9 +21,10 @@ internal class PacketHandler
 
         // 해야하는 행동 자체를 push
         GameRoom room = clientSession.Room;
-        room.Push(
-            ()=> room.Broadcast(clientSession, chatPacket.chat)
-        );
+        if(room != null)
+            room.Push(
+                ()=> room.Broadcast(clientSession, chatPacket.chat)
+            );
     }
 }
 
