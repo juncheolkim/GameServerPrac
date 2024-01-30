@@ -1,4 +1,5 @@
-﻿using Server.Session;
+﻿using Server;
+using Server.Session;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,11 @@ internal class PacketHandler
             return;
         }
 
-        clientSession.Room.Broadcast(clientSession, chatPacket.chat);
-
+        // 해야하는 행동 자체를 push
+        GameRoom room = clientSession.Room;
+        room.Push(
+            ()=> room.Broadcast(clientSession, chatPacket.chat)
+        );
     }
 }
 

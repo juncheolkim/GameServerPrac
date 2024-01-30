@@ -16,7 +16,10 @@ namespace Server.Session
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected: {endPoint}");
-            Program.Room.Enter(this);
+
+            // 주문서를 제출할 뿐, 실행을 직접 하지 않는다.
+            // Program 전역 Room
+            Program.Room.Push(()=> Program.Room.Enter(this));
         }
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
@@ -28,7 +31,8 @@ namespace Server.Session
             SessionManager.Instance.Remove(this);
             if (Room != null)
             {
-                Room.Leave(this);
+                GameRoom room = Room;
+                room.Push(()=> room.Leave(this));
                 Room = null;
             }
             Console.WriteLine($"OnDisconnected: {endPoint}");
