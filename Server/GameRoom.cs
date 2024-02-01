@@ -21,9 +21,20 @@ namespace Server
         // 각각의 행동들을 jobQueue에 밀어넣어준다.
         JobQueue _jobQueue = new();
 
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+
         public void Push(Action job)
         {
             _jobQueue.Push(job);
+        }
+
+        public void Flush()
+        {
+            foreach (ClientSession s in _sessions)
+                s.Send(_pendingList);
+
+            Console.WriteLine($"Flushed {_pendingList.Count} items");
+            _pendingList.Clear();
         }
 
         // jobQueue가 Broadcast, Enter, Leave를 단일로 실행시키기 때문에
@@ -35,8 +46,9 @@ namespace Server
             packet.chat = $"{chat} I am {packet.playerId}";
             ArraySegment<byte> segment = packet.Write();
 
-            foreach (ClientSession s in _sessions)
-                s.Send(segment);
+            // 클라이언트 단에서 패킷 모아 보내기
+            _pendingList.Add(segment);
+
         }
         public void Enter(ClientSession session)
         {

@@ -15,6 +15,7 @@ namespace ServerCore
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
             int processLen = 0;
+            int packetCount = 0;
 
             while (true)
             {
@@ -29,10 +30,13 @@ namespace ServerCore
 
                 // 여기까지 왔으면 패킷 조립 가능
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
+                packetCount++;
 
                 processLen += dataSize;
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
             }
+            if (packetCount > 1)
+                Console.WriteLine($"패킷 모아보내기 : {packetCount}");
 
             return processLen;
         }
@@ -45,7 +49,7 @@ namespace ServerCore
         Socket _socket;
         int _disconnected = 0;
 
-        RecvBuffer _recvBuffer = new RecvBuffer(1024);
+        RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
         object _lock = new object();
         Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
@@ -80,8 +84,22 @@ namespace ServerCore
         {
             lock (_lock)
             {
-                _sendQueue.Enqueue(sendBuffer);
+                _sendQueue.Enqueue(sendBuffer); // 밀어넣는 작업과 실제로 보내는 작업이랑 분리: 패킷 모아 보내기
                 if (_pendingList.Count == 0)    // 대기중인 애가 한명도 없다.
+                    RegisterSend();
+            }
+        }
+        // 만약 리스트로 받았다면
+        public void Send(List<ArraySegment<byte>> sendBufferList)
+        {
+            if (sendBufferList.Count == 0)
+                return;
+            lock (_lock)
+            {
+                foreach (ArraySegment<byte> sendBuffer in sendBufferList)
+                    _sendQueue.Enqueue(sendBuffer);
+
+                if (_pendingList.Count == 0)
                     RegisterSend();
             }
         }
