@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace ServerCore
 {
@@ -37,7 +38,6 @@ namespace ServerCore
             bool pending = socket.ConnectAsync(args);
             if (pending == false)
                 OnConnectCompleted(null, args);
-
         }
 
         void OnConnectCompleted(object sender, SocketAsyncEventArgs args)
@@ -50,7 +50,7 @@ namespace ServerCore
             }
             else
             {
-                Console.WriteLine($"OnConnectCompleted Fail: {args.SocketError}");
+                Debug.Log($"OnConnectCompleted Fail: {args.SocketError}");
             }
         }
     }
