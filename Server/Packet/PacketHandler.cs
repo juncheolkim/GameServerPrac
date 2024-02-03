@@ -9,22 +9,34 @@ using System.Threading.Tasks;
 
 internal class PacketHandler
 {
-    public static void C_ChatHandler(PacketSession session, IPacket packet)
+    public static void C_LeaveGameHandler(PacketSession session, IPacket packet)
     {
-        C_Chat chatPacket = packet as C_Chat;
         ClientSession clientSession = session as ClientSession;
 
-        if (clientSession == null)
+        if (clientSession.Room == null)
         {
             return;
         }
 
         // 해야하는 행동 자체를 push
         GameRoom room = clientSession.Room;
-        if(room != null)
-            room.Push(
-                ()=> room.Broadcast(clientSession, chatPacket.chat)
-            );
+        room.Push(() => room.Leave(clientSession));
+    }
+    public static void C_MoveHandler(PacketSession session, IPacket packet)
+    {
+        C_Move movePacket = packet as C_Move;
+        ClientSession clientSession = session as ClientSession;
+
+        if (clientSession.Room == null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{movePacket.posX}, {movePacket.posY}, {movePacket.posZ}");
+
+        // 해야하는 행동 자체를 push
+        GameRoom room = clientSession.Room;
+        room.Push(() => room.Move(clientSession, movePacket));
     }
 }
 
