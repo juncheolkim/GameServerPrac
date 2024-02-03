@@ -32,7 +32,7 @@ internal class PacketHandler
             return;
         }
 
-        Console.WriteLine($"{movePacket.posX}, {movePacket.posY}, {movePacket.posZ}");
+        //Console.WriteLine($"{movePacket.posX}, {movePacket.posY}, {movePacket.posZ}");
 
         // 해야하는 행동 자체를 push
         GameRoom room = clientSession.Room;

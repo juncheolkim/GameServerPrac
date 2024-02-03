@@ -201,7 +201,7 @@ for (int i = 0; i < {1}Len; i++)
         // {0} 변수 이름
         // {1} 변수 형식
         public static string writeFormat =
-@"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0});
+@"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.{0});
 count += sizeof({1});";
         // {0} 변수 이름
         // {1} 변수 형식
@@ -219,7 +219,7 @@ count += {0}Len;";
         public static string writeListFormat =
 @"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)this.{1}s.Count);
 count += sizeof(ushort);
-foreach ({0} {1} in {1}s)
+foreach ({0} {1} in this.{1}s)
     success &= {1}.Write(s, ref count);";
 
     }

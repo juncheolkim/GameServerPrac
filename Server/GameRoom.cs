@@ -16,11 +16,8 @@ namespace Server
          * lock을 사용하여 동기화 한다.
          */
         List<ClientSession> _sessions = new List<ClientSession>();
-        object _lock = new object();
-
         // 각각의 행동들을 jobQueue에 밀어넣어준다.
-        JobQueue _jobQueue = new();
-
+        JobQueue _jobQueue = new JobQueue();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
 
         public void Push(Action job)

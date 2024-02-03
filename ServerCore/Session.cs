@@ -123,7 +123,6 @@ namespace ServerCore
             while(_sendQueue.Count > 0)
             {
                 ArraySegment<byte> buff = _sendQueue.Dequeue();
-                //_sendArgs.BufferList.Add(new ArraySegment<byte>(buff,0,buff.Length)); // 어떤 배열의 일부를 나타내는 구조체. Stack에 할당됨. 이렇게 할당하면 에러발생
                 _pendingList.Add(buff);
             }
 

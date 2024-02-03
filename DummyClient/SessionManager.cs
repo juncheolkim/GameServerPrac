@@ -38,6 +38,5 @@ namespace DummyClient
                 return session;
             }
         }
-        //public 
     }
 }
